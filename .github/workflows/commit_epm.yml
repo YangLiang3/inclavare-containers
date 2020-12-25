@@ -29,10 +29,10 @@ jobs:
     - name: Build install packages and run epm service
       run: |
         docker exec $rune_test bash -c "mkdir -p /var/run/epm;
-        mkdir -p /var/epm;
+        mkdir -p /etc/epm;
         mkdir -p /var/local/epm;
         cp -r /root/inclavare-containers /root/inclavare-containers-test;
-        cp /root/inclavare-containers-test/epm/conf/config.toml /var/epm/;
+        cp /root/inclavare-containers-test/epm/conf/config.toml /etc/epm/;
         cd /root/inclavare-containers-test;
         make -j${CPU_NUM} && make install -j${CPU_NUM}";
         docker exec $rune_test bash -c "cd /root/inclavare-containers-test/epm;
