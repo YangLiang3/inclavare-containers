@@ -1,22 +1,22 @@
 name: Run rune with skeleton
 
 # Controls when the action will run. Triggers the workflow on pull request labeled testing-before-checkin.
-on:
-  pull_request_target:
-    types: labeled
+on: [push, pull_request]
+        #  pull_request_target:
+        #types: labeled
 
 jobs:
   rune_skeleton:
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'testing-before-checkin') }}
+    if: always() #${{ contains(github.event.pull_request.labels.*.name, 'testing-before-checkin') }}
     runs-on: ${{ matrix.sgx }}
     strategy:
       matrix:
-        sgx: [[self-hosted, SGX1], [self-hosted, SGX2]]
+        sgx: [self-hosted, SGX2]
         tag: [ubuntu18.04, centos8.1]
     steps:
     - uses: actions/checkout@v2
-      with:
-        ref: refs/pull/${{ github.event.pull_request.number }}/merge
+      # with:
+      # ref: refs/pull/${{ github.event.pull_request.number }}/merge
 
     - name: Prepare work
       run: echo "CPU_NUM=$(nproc --all)" >> $GITHUB_ENV
@@ -58,7 +58,7 @@ jobs:
       run: docker exec $rune_test bash -c "docker run -i --rm --runtime=rune -e ENCLAVE_TYPE=intelSgx -e ENCLAVE_RUNTIME_PATH=/usr/lib/liberpal-skeleton-v2.so -e ENCLAVE_RUNTIME_ARGS=debug skeleton-enclave"
 
     - name: Run skeleton v3
-      if: always()
+      if: ${{ contains(matrix.sgx, 'SGX2') }}
       run: docker exec $rune_test bash -c "docker run -i --rm --runtime=rune -e ENCLAVE_TYPE=intelSgx -e ENCLAVE_RUNTIME_PATH=/usr/lib/liberpal-skeleton-v3.so -e ENCLAVE_RUNTIME_ARGS=debug skeleton-enclave"
 
     - name: Run skeleton v2 bundle
