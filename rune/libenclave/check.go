@@ -67,7 +67,7 @@ func CreateLibenclaveEPMMount(cwd string, config *configs.Config, etype string) 
 	}
 
 	for _, m := range config.Mounts {
-		if strings.EqualFold(m.Destination, "/var/run/epm") {
+		if strings.EqualFold(m.Destination, "/var/run/epm") || strings.EqualFold(m.Destination, "/run/epm") {
 			return
 		}
 	}
