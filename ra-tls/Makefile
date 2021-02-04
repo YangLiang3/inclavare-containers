@@ -29,7 +29,10 @@ CFLAGS += -std=gnu99 -I$(SGX_RA_TLS) -I$(SGX_SDK)/include -I$(INCDIR) $(SGX_DCAP
 CFLAGS += $(CFLAGSERRORS) -g -ggdb -O0 -DWOLFSSL_SGX_ATTESTATION -DWOLFSSL_CERT_EXT # -DDEBUG -DDYNAMIC_RSA
 CFLAGS += -DSGX_GROUP_OUT_OF_DATE
 ifdef ECDSA
-  CFLAGS += -DRATLS_ECDSA
+	CFLAGS += -DRATLS_ECDSA
+endif
+ifdef LA
+	CFLAGS += -DLA_REPORT
 endif
 
 CC ?= gcc
@@ -77,7 +80,8 @@ wolfssl:
 	fi
 
 # sgx-ra-tls needs the header files from wolfssl.
-$(LIBDIR)/libra-challenger.a: $(LIBDIR) $(LIBDIR)/libwolfssl.a $(SGX_RA_TLS)/ra.o $(SGX_RA_TLS)/wolfssl-ra-challenger.o $(SGX_RA_TLS)/wolfssl-ra.o $(SGX_RA_TLS)/ra-challenger.o $(SGX_RA_TLS)/ias_sign_ca_cert.o
+$(LIBDIR)/libra-challenger.a: $(LIBDIR) $(LIBDIR)/libwolfssl.a $(SGX_RA_TLS)/ra.o $(SGX_RA_TLS)/wolfssl-ra-challenger.o $(SGX_RA_TLS)/wolfssl-ra.o $(SGX_RA_TLS)/ra-challenger.o $(SGX_RA_TLS)/ias_sign_ca_cert.o $(SGX_RA_TLS)/wolfssl-la-challenger.o
+	#$(SGX_RA_TLS)/wolfssl-la-attester.o $(SGX_RA_TLS)/ra_tls_t.o
 	$(AR) rcs "$@" $(filter %.o, $^)
 
 # Ideally, libwolfssl.sgx.static.lib.a and libwolfssl.a could be built
@@ -85,7 +89,7 @@ $(LIBDIR)/libra-challenger.a: $(LIBDIR) $(LIBDIR)/libwolfssl.a $(SGX_RA_TLS)/ra.
 # serial build.
 #
 # -DFP_MAX_BITS=8192 required for RSA keys > 2048 bits to work
-$(LIBDIR)/libwolfssl.sgx.static.lib.a: $(LIBDIR) $(LIBDIR)/libwolfssl.a
+$(LIBDIR)/libwolfssl.sgx.static.lib.a: $(LIBDIR) $(LIBDIR)/libwolfssl.a #$(SGX_RA_TLS)/wolfssl-ra-attester.o
 	cd wolfssl/IDE/LINUX-SGX && \
 	  make -f sgx_t_static.mk CFLAGS="-DUSER_TIME -DWOLFSSL_SGX_ATTESTATION -DWOLFSSL_KEY_GEN -DWOLFSSL_CERT_GEN -DWOLFSSL_CERT_EXT -DFP_MAX_BITS=8192" && \
 	  cp -f libwolfssl.sgx.static.lib.a "$@"

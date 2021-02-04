@@ -23,7 +23,8 @@ SGX_DCAP_INC := -I$(SGX_DCAP)/QuoteGeneration/quote_wrapper/ql/inc \
 		-I$(SGX_DCAP)/QuoteVerification/QVL/Src/AttestationLibrary/include \
 		-I../build/include  \
 		-I/usr/x86_64-linux-gnu/include \
-		-I/usr/include/x86_64-linux-gnu
+		-I/usr/include/x86_64-linux-gnu \
+		-I./
 endif
 
 ifeq ($(SGX_DEBUG), 1)
@@ -53,9 +54,14 @@ ifdef ECDSA
 	Wolfssl_C_Extra_Flags += -DRATLS_ECDSA
 endif
 
+ifdef LA
+	Wolfssl_C_Extra_Flags += -DLA_REPORT
+endif
+
 Wolfssl_C_Files := \
 	wolfssl-ra-attester.c \
 	sgxsdk-ra-attester_t.c \
+	wolfssl-la-attester.c \
 	ra-challenger.c \
 	wolfssl-ra.c \
 	ra_tls_t.c

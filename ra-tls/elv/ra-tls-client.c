@@ -106,6 +106,7 @@ int ra_tls_echo(int sockfd)
 		goto err_ssl;
 	}
 
+#ifndef LA_REPORT
 	WOLFSSL_X509 *srvcrt = wolfSSL_get_peer_certificate(ssl);
 
 	int derSz;
@@ -124,7 +125,7 @@ int ra_tls_echo(int sockfd)
 	for (int i = 0; i < SGX_HASH_SIZE; ++i)
 		printf("%02x", body->mr_signer.m[i]);
 	printf("\n");
-
+#endif
 	const char *http_request = "GET / HTTP/1.0\r\n\r\n";
 	size_t len = strlen(http_request);
 	if (wolfSSL_write(ssl, http_request, len) != (int)len) {

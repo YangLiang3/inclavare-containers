@@ -72,6 +72,10 @@ ifdef ECDSA
 	Wolfssl_C_Extra_Flags += -DRATLS_ECDSA
 endif
 
+ifdef LA
+	Wolfssl_C_Extra_Flags += -DLA_REPORT
+endif
+
 Flags_Just_For_C := -Wno-implicit-function-declaration -std=c11
 Common_C_Cpp_Flags := $(SGX_COMMON_CFLAGS) -nostdinc -fvisibility=hidden -fpie -fstack-protector $(Wolfssl_Enclave_Include_Paths) -fno-builtin -fno-builtin-printf -I.
 Wolfssl_Enclave_C_Flags := $(Flags_Just_For_C) $(Common_C_Cpp_Flags) $(Wolfssl_C_Extra_Flags)
