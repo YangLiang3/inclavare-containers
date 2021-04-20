@@ -102,7 +102,7 @@ ifeq ($(Tls_Wolfssl),1)
   Enclave_Cflags += $(Wolfssl_Sgx_Cflags)
 endif
 $(App_Name)_t.o: $(App_Name)_t.c
-	$(CC) $(Enclave_Cflags) -c $< -o $@
+	$(CC) $(Enclave_Cflags) -DHAVE_TM_TYPE -c $< -o $@
 	@echo "CC   <=  $<"
 
 $(App_Name)_t.c: $(App_Name)_t.h
@@ -120,7 +120,7 @@ $(enclave_cxx_objs): %.o : %.cpp
 	@echo "CXX  <=  $<"
 
 $(enclave_c_objs): %.o : %.c
-	$(CC) $(Enclave_Cflags) -c $< -o $@
+	$(CC) $(Enclave_Cflags) -DHAVE_TM_TYPE -c $< -o $@
 	@echo "CC   <=  $<"
 
 app_cxx_objs := $(sort $(App_Cxx_Files:.cpp=.o))
