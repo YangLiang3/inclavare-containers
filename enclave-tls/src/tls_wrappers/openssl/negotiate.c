@@ -15,15 +15,27 @@ extern int verify_certificate(int preverify, X509_STORE_CTX *store);
 tls_wrapper_err_t openssl_internal_negotiate(tls_wrapper_ctx_t *ctx, unsigned long conf_flags,
 					     int fd, int (*verify)(int, X509_STORE_CTX *))
 {
-        int flags = SSL_VERIFY_PEER;
-        openssl_ctx_t *ssl_ctx = ctx->tls_private;
+	openssl_ctx_t *ssl_ctx = ctx->tls_private;
 
-        if ((conf_flags & ENCLAVE_TLS_CONF_FLAGS_MUTUAL) &&
-                        (conf_flags & ENCLAVE_TLS_CONF_FLAGS_SERVER))
-                flags |= SSL_VERIFY_PEER;
+	/*
+	 * Set the verification mode.
+	 * Refer to https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_verify.html
+	 *
+	 * client: SSL_VERIFY_PEER
+	 * server: SSL_VERIFY_NONE
+	 * client+mutual: SSL_VERIFY_PEER
+	 * server+mutual: SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT
+	 */
+	if (verify) {
+		int mode = SSL_VERIFY_NONE;
 
-        if (verify)
-                SSL_CTX_set_verify(ssl_ctx->sctx, flags, verify);
+		if (!(conf_flags & ENCLAVE_TLS_CONF_FLAGS_SERVER))
+			mode |= SSL_VERIFY_PEER;
+		else if (conf_flags & ENCLAVE_TLS_CONF_FLAGS_MUTUAL)
+			mode |= SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
+
+                SSL_CTX_set_verify(ssl_ctx->sctx, mode, verify);
+	}
 
         SSL *ssl = SSL_new(ssl_ctx->sctx);
         if (!ssl)
