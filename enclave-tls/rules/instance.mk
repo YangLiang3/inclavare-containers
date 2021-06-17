@@ -98,7 +98,7 @@ target := $(Build_Libdir)/$(Enclave_Tls_Instance_Type)s/$(instance_lib)
 #$(target): $(Dependencies) $(instance_objs)
 $(target): $(Build_Instance_Dependencies) $(instance_objs)
 	$(INSTALL) -d -m 0755 $(dir $@)
-	$(LD) $(Enclave_Tls_Ldflags) -soname=$(notdir $@).$(Major_Version) -o $@ $^ $(Enclave_Tls_Extra_Ldflags)
+	$(LD) -lssl -lcrypto $(Enclave_Tls_Ldflags) -soname=$(notdir $@).$(Major_Version) -o $@ $^ $(Enclave_Tls_Extra_Ldflags)
 
 Build_Instance: $(target)
 

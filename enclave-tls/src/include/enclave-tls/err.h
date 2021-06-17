@@ -48,6 +48,9 @@
 /* The base of error code used by sgx-la */
 #define SGX_LA_ERR_BASE (0 << ERR_CODE_SUBCLASS_SHIFT)
 
+/* The base of error code used by openssl */
+#define OPENSSL_ERR_BASE (0 << ERR_CODE_SUBCLASS_SHIFT)
+
 // Error code used to construct TLS Wrapper instance
 #define __TLS_WRAPPER_ERR_CODE(base, err)                                                        \
 	(((TLS_WRAPPER_ERR_BASE + (base)) & ERR_CODE_CLASS_MASK) | ((err)&ERR_CODE_ERROR_MASK) | \
@@ -56,6 +59,8 @@
 #define WOLFSSL_ERR_CODE(err) __TLS_WRAPPER_ERR_CODE(WOLFSSL_ERR_BASE, err)
 
 #define WOLFSSL_SGX_ERR_CODE(err) __TLS_WRAPPER_ERR_CODE(WOLFSSL_SGX_ERR_BASE, err)
+
+#define	OPENSSL_ERR_CODE(err)	__TLS_WRAPPER_ERR_CODE(OPENSSL_ERR_BASE, err)
 
 #define __CRYPTO_WRAPPER_ERR_CODE(base, err)                          \
 	(((CRYPTO_WRAPPER_ERR_BASE + (base)) & ERR_CODE_CLASS_MASK) | \
