@@ -21,8 +21,8 @@ ifdef SGX
 endif
 
 libenclave_tls := $(notdir $(Enclave_Tls_Lib))
-crypto_wrappers := $(addsuffix .so,$(addprefix libcrypto_wrapper_,nullcrypto wolfcrypt))
-tls_wrappers := $(addsuffix .so,$(addprefix libtls_wrapper_,nulltls wolfssl))
+crypto_wrappers := $(addsuffix .so,$(addprefix libcrypto_wrapper_,nullcrypto wolfcrypt openssl))
+tls_wrappers := $(addsuffix .so,$(addprefix libtls_wrapper_,nulltls wolfssl openssl))
 attesters := $(addsuffix .so,$(addprefix libattester_,nullattester))
 verifiers := $(addsuffix .so,$(addprefix libverifier_,nullverifier))
 
@@ -71,7 +71,7 @@ $(Build_Libdir)/libwolfssl.so $(Build_Libdir)/libwolfssl_sgx.a:
 libenclave_tls_objs := $(libenclave_tls_files:.c=.o)
 $(Build_Libdir)/$(libenclave_tls): $(Build_Dependencies) $(libenclave_tls_objs)
 	@$(INSTALL) -d -m 0755 $(dir $@)
-	$(LD) $(Enclave_Tls_Ldflags) -soname=$(notdir $@).$(Major_Version) -o $@ $(libenclave_tls_objs) -ldl $(Enclave_Tls_Extra_Ldflags)
+	$(LD) -lcrypto -lssl  $(Enclave_Tls_Ldflags) -soname=$(notdir $@).$(Major_Version) -o $@ $(libenclave_tls_objs) -ldl $(Enclave_Tls_Extra_Ldflags)
 
 $(libenclave_tls_objs): %.o: %.c
 	$(CC) -c $(Enclave_Tls_Cflags) -o $@ $<

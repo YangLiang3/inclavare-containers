@@ -14,9 +14,9 @@ tls_wrapper_err_t openssl_init(tls_wrapper_ctx_t *ctx)
         if (!ctx)
                 return -TLS_WRAPPER_ERR_INVALID;
 
-        SSL_library_init();
-        OpenSSL_add_all_algorithms();
-        SSL_load_error_strings();
+//        SSL_library_init();
+  //      OpenSSL_add_all_algorithms();
+    //    SSL_load_error_strings();
 
         openssl_ctx_t *ssl_ctx = calloc(1, sizeof(*ssl_ctx));
         if (!ssl_ctx)
